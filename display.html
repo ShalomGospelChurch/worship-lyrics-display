@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Palco</title>
+    <style>
+        body {
+            background-color: #000; /* Sfondo nero */
+            color: #fff; /* Testo bianco */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Nasconde le scrollbar */
+        }
+        #testoDisplay {
+            font-size: 5vw; /* Dimensione testo responsive */
+            text-align: center;
+            padding: 20px;
+            /* Preserva gli "a capo" e fa andare il testo a capo automaticamente */
+            white-space: pre-wrap; 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="testoDisplay">In attesa del testo dalla regia...</div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io(); // Connessione al server
+        const testoDisplay = document.getElementById('testoDisplay');
+
+        // Si mette in ascolto dell'evento 'ricevi-testo'
+        socket.on('ricevi-testo', (testo) => {
+            // Aggiorna il contenuto del div
+            testoDisplay.innerText = testo;
+        });
+    </script>
+</body>
+</html>

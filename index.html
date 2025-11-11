@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub Proiettore</title>
+    <link rel="stylesheet" href="/asset/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+        .links a {
+            display: block;
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            margin: 15px 0;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .links a:hover {
+            background-color: #0056b3;
+            transform: scale(1.03);
+        }
+        .links a.display {
+            background-color: #28a745;
+        }
+        .links a.display:hover {
+            background-color: #218838;
+        }
+        .links a.admin {
+            background-color: #dc3545;
+        }
+        .links a.admin:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>SGC | Lyrics Web-app</h1>
+    <div class="links">
+        <a href="/control.html" class="admin">🔒 Control panel</a>
+        <a href="/display.html" class="display">🖥️ Display</a>
+    </div>
+</div>
+</body>
+</html>

@@ -4,8 +4,19 @@ const app = express();
 const http = require('http').createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(http);
+const basicAuth = require('express-basic-auth');
 
 const port = 3000;
+
+const users = {
+  'admin': 'admin'
+};
+
+app.use('/control.html', basicAuth({
+  users: users,
+  challenge: true, // Mostra il pop-up di login
+  unauthorizedResponse: 'Accesso non autorizzato'
+}));
 
 // Serve i file HTML statici
 app.use(express.static(__dirname));

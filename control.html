@@ -41,7 +41,6 @@
             font-size: 1.2rem;
             box-sizing: border-box;
             padding: 10px;
-            background: rgb(29, 30, 38);
             border-radius: 10px;
             border: 2px solid #04439b;
             color: white;
@@ -115,11 +114,11 @@
 <body class="noto-serif-sinhala-700">
 <h1 style="color: white">Lyrics control panel</h1>
 
-<textarea id="testoInput" class="noto-serif-sinhala-700" placeholder="Incolla o scrivi qui il testo del canto..."></textarea>
+<textarea id="testoInput" class="noto-serif-sinhala-700 bg-black-2" placeholder="Incolla o scrivi qui il testo del canto..."></textarea>
 
 <div class="button-container">
-    <button id="inviaBtn">Invia al Palco</button>
-    <button id="svuotaBtn">Svuota Display</button>
+    <button id="svuotaBtn" style="float: right">Cancel</button>
+    <button id="inviaBtn" style="width: 300px">Send</button>
 </div>
 
 <div id="toast" class="toast"></div>

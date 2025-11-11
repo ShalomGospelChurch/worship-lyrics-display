@@ -14,14 +14,18 @@ app.use(express.static(__dirname));
 io.on('connection', (socket) => {
   console.log('✓ Client connesso:', socket.id);
 
-  // Quando la regia INVIA il testo (click bottone)
+  // Quando la regia INVIA il testo
   socket.on('invia-testo', (testo) => {
     console.log('📤 Testo ricevuto dalla regia:', testo);
-    
-    // Inoltra a TUTTI i display connessi
     io.emit('ricevi-testo', testo);
-    
     console.log('✓ Testo inoltrato a tutti i display');
+  });
+
+  // Quando la regia SVUOTA il display
+  socket.on('svuota-display', () => {
+    console.log('🗑️ Richiesta svuotamento display');
+    io.emit('svuota-testo');
+    console.log('✓ Display svuotati');
   });
 
   socket.on('disconnect', () => {

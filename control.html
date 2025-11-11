@@ -21,20 +21,37 @@
             border-radius: 5px;
             border: 2px solid #ddd;
         }
+        
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
         button {
-            display: block;
-            width: 100%;
+            flex: 1;
             padding: 15px;
             font-size: 1.5rem;
-            background-color: #007bff;
             color: white;
             border: none;
             cursor: pointer;
-            margin-top: 10px;
             border-radius: 5px;
             transition: background-color 0.3s;
         }
-        button:hover { background-color: #0056b3; }
+        
+        #inviaBtn {
+            background-color: #007bff;
+        }
+        #inviaBtn:hover { 
+            background-color: #0056b3; 
+        }
+        
+        #svuotaBtn {
+            background-color: #dc3545;
+        }
+        #svuotaBtn:hover { 
+            background-color: #c82333; 
+        }
         
         /* Toast notification */
         .toast {
@@ -61,13 +78,22 @@
         .toast.error {
             background-color: #dc3545;
         }
+        
+        .toast.warning {
+            background-color: #ffc107;
+            color: #000;
+        }
     </style>
 </head>
 <body>
     <h1>Pannello Regia Canti</h1>
     
     <textarea id="testoInput" placeholder="Incolla o scrivi qui il testo del canto..."></textarea>
-    <button id="inviaBtn">Invia al Palco</button>
+    
+    <div class="button-container">
+        <button id="inviaBtn">Invia al Palco</button>
+        <button id="svuotaBtn">Svuota Display</button>
+    </div>
     
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
@@ -78,16 +104,20 @@
 
         const testoInput = document.getElementById('testoInput');
         const inviaBtn = document.getElementById('inviaBtn');
+        const svuotaBtn = document.getElementById('svuotaBtn');
         const toast = document.getElementById('toast');
 
         // Funzione per mostrare il toast
-        function mostraToast(messaggio, isError = false) {
+        function mostraToast(messaggio, tipo = 'success') {
             toast.textContent = messaggio;
-            if (isError) {
+            toast.classList.remove('error', 'warning');
+            
+            if (tipo === 'error') {
                 toast.classList.add('error');
-            } else {
-                toast.classList.remove('error');
+            } else if (tipo === 'warning') {
+                toast.classList.add('warning');
             }
+            
             toast.classList.add('show');
             
             setTimeout(() => {
@@ -95,25 +125,28 @@
             }, 3000);
         }
 
-        // Funzione per inviare il testo - SOLO quando clicchi il bottone
+        // Funzione per inviare il testo
         function inviaTesto() {
             const testo = testoInput.value.trim();
             
-            // Se è vuoto, mostra errore
             if (testo === '') {
-                mostraToast('⚠️ Inserisci del testo prima di inviare!', true);
+                mostraToast('⚠️ Inserisci del testo prima di inviare!', 'error');
                 return;
             }
             
-            // Invia il testo al server
             socket.emit('invia-testo', testo);
-            
-            // Mostra conferma verde
             mostraToast('✓ Testo inviato al palco!');
         }
 
-        // SOLO evento: click sul bottone
+        // Funzione per svuotare il display
+        function svuotaDisplay() {
+            socket.emit('svuota-display');
+            mostraToast('🗑️ Display svuotato', 'warning');
+        }
+
+        // Eventi
         inviaBtn.addEventListener('click', inviaTesto);
+        svuotaBtn.addEventListener('click', svuotaDisplay);
         
         // Feedback connessione
         socket.on('connect', () => {
@@ -121,7 +154,7 @@
         });
         
         socket.on('disconnect', () => {
-            mostraToast('⚠️ Connessione persa!', true);
+            mostraToast('⚠️ Connessione persa!', 'error');
         });
     </script>
 </body>

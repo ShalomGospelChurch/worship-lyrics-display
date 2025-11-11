@@ -33,10 +33,16 @@
         const socket = io();
         const testoDisplay = document.getElementById('testoDisplay');
 
-        // Riceve il testo SOLO quando viene inviato dalla regia
+        // Riceve il testo dalla regia
         socket.on('ricevi-testo', (testo) => {
             testoDisplay.innerText = testo;
             console.log('✓ Testo ricevuto:', testo);
+        });
+        
+        // Riceve il comando di svuotare
+        socket.on('svuota-testo', () => {
+            testoDisplay.innerText = 'In attesa del testo dalla regia...';
+            console.log('🗑️ Display svuotato');
         });
         
         socket.on('connect', () => {

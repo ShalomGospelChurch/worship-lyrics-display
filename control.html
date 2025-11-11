@@ -5,13 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regia Testi</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f4f4f4;
+            position: relative;
+        }
         h1 { text-align: center; }
         textarea {
             width: 100%;
             height: 300px;
             font-size: 1.2rem;
-            box-sizing: border-box; /* Per includere padding e border nel width */
+            box-sizing: border-box;
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #ddd;
         }
         button {
             display: block;
@@ -23,8 +31,36 @@
             border: none;
             cursor: pointer;
             margin-top: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
         }
         button:hover { background-color: #0056b3; }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            font-size: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .toast.error {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
@@ -32,30 +68,61 @@
     
     <textarea id="testoInput" placeholder="Incolla o scrivi qui il testo del canto..."></textarea>
     <button id="inviaBtn">Invia al Palco</button>
+    
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io(); // Connessione al server
+        const socket = io();
 
         const testoInput = document.getElementById('testoInput');
         const inviaBtn = document.getElementById('inviaBtn');
+        const toast = document.getElementById('toast');
 
-        // Funzione per inviare il testo
-        function inviaTesto() {
-            const testo = testoInput.value;
-            // Invia il testo al server sull'evento 'invia-testo'
-            socket.emit('invia-testo', testo);
+        // Funzione per mostrare il toast
+        function mostraToast(messaggio, isError = false) {
+            toast.textContent = messaggio;
+            if (isError) {
+                toast.classList.add('error');
+            } else {
+                toast.classList.remove('error');
+            }
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
-        // Invia al click del bottone
+        // Funzione per inviare il testo - SOLO quando clicchi il bottone
+        function inviaTesto() {
+            const testo = testoInput.value.trim();
+            
+            // Se è vuoto, mostra errore
+            if (testo === '') {
+                mostraToast('⚠️ Inserisci del testo prima di inviare!', true);
+                return;
+            }
+            
+            // Invia il testo al server
+            socket.emit('invia-testo', testo);
+            
+            // Mostra conferma verde
+            mostraToast('✓ Testo inviato al palco!');
+        }
+
+        // SOLO evento: click sul bottone
         inviaBtn.addEventListener('click', inviaTesto);
         
-        // Invia anche mentre scrivi (per un feedback istantaneo)
-        testoInput.addEventListener('input', () => {
-            clearTimeout(testoInput.timer);
-            testoInput.timer = setTimeout(inviaTesto, 200);
+        // Feedback connessione
+        socket.on('connect', () => {
+            console.log('✓ Connesso al server');
         });
-
+        
+        socket.on('disconnect', () => {
+            mostraToast('⚠️ Connessione persa!', true);
+        });
     </script>
 </body>
 </html>

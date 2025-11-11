@@ -5,31 +5,33 @@ const http = require('http').createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(http);
 
-const port = 3000; // La porta su cui girerà il server
+const port = 3000;
 
-// Serve i file HTML (control.html e display.html)
+// Serve i file HTML statici
 app.use(express.static(__dirname));
 
-// Gestione delle connessioni
+// Gestione connessioni WebSocket
 io.on('connection', (socket) => {
-  console.log('Un client si è connesso: ' + socket.id);
+  console.log('✓ Client connesso:', socket.id);
 
-  // Quando riceve un messaggio dal PC di regia...
+  // Quando la regia INVIA il testo (click bottone)
   socket.on('invia-testo', (testo) => {
-    console.log('Testo ricevuto:', testo);
+    console.log('📤 Testo ricevuto dalla regia:', testo);
     
-    // ...lo invia a tutti gli altri client (tablet, monitor)
-    socket.broadcast.emit('ricevi-testo', testo);
+    // Inoltra a TUTTI i display connessi
+    io.emit('ricevi-testo', testo);
+    
+    console.log('✓ Testo inoltrato a tutti i display');
   });
 
   socket.on('disconnect', () => {
-    console.log('Un client si è disconnesso: ' + socket.id);
+    console.log('✗ Client disconnesso:', socket.id);
   });
 });
 
-// Avvia il server
+// Avvia server
 http.listen(port, () => {
-  console.log(`Server in ascolto sulla porta ${port}`);
-  console.log(`Apri http://localhost:${port}/control.html per la regia`);
-  console.log(`Apri http://TUO_IP_LOCALE:${port}/display.html per i monitor`);
+  console.log(`\n🚀 Server avviato sulla porta ${port}`);
+  console.log(`📱 Regia: http://localhost:${port}/control.html`);
+  console.log(`📺 Display: http://localhost:${port}/display.html\n`);
 });

@@ -6,22 +6,21 @@
     <title>Display Palco</title>
     <style>
         body {
-            background-color: #000; /* Sfondo nero */
-            color: #fff; /* Testo bianco */
+            background-color: #000;
+            color: #fff;
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden; /* Nasconde le scrollbar */
+            overflow: hidden;
         }
         #testoDisplay {
-            font-size: 5vw; /* Dimensione testo responsive */
+            font-size: 5vw;
             text-align: center;
             padding: 20px;
-            /* Preserva gli "a capo" e fa andare il testo a capo automaticamente */
-            white-space: pre-wrap; 
+            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -31,13 +30,17 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io(); // Connessione al server
+        const socket = io();
         const testoDisplay = document.getElementById('testoDisplay');
 
-        // Si mette in ascolto dell'evento 'ricevi-testo'
+        // Riceve il testo SOLO quando viene inviato dalla regia
         socket.on('ricevi-testo', (testo) => {
-            // Aggiorna il contenuto del div
             testoDisplay.innerText = testo;
+            console.log('✓ Testo ricevuto:', testo);
+        });
+        
+        socket.on('connect', () => {
+            console.log('✓ Display connesso al server');
         });
     </script>
 </body>

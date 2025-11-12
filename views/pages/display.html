@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Palco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts - Noto Serif Sinhala -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .noto-serif-sinhala {
+            font-family: "Noto Serif Sinhala", serif;
+            font-optical-sizing: auto;
+            font-weight: 700;
+            font-style: normal;
+            font-variation-settings: "wdth" 100.5;
+        }
+    </style>
+</head>
+<body class="h-screen bg-[#0D0D0D] flex items-center justify-center overflow-hidden m-0 p-0">
+    
+    <div class="w-full h-full flex items-center justify-center p-8">
+        <pre id="testoDisplay" 
+             class="text-white text-center noto-serif-sinhala fade-in
+                    w-full h-full flex items-center justify-center
+                    overflow-hidden m-0 p-0"></pre>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const testoDisplay = document.getElementById('testoDisplay');
+
+        // Funzione per calcolare il font size ottimale
+        function calcolaFontSize(testo) {
+            const lines = testo.split('\n').length;
+            const maxCharsPerLine = Math.max(...testo.split('\n').map(line => line.length));
+            
+            // Calcola font size in base al numero di righe
+            let fontSize;
+            if (lines > 20) {
+                fontSize = 2; // Molto piccolo
+            } else if (lines > 16) {
+                fontSize = 2.5;
+            } else if (lines > 12) {
+                fontSize = 3;
+            } else if (lines > 8) {
+                fontSize = 3.5;
+            } else if (lines > 6) {
+                fontSize = 4;
+            } else if (lines > 4) {
+                fontSize = 4.5;
+            } else {
+                fontSize = 5; // Grande per pochi versi
+            }
+            
+            // Riduci ulteriormente se le righe sono molto lunghe
+            if (maxCharsPerLine > 50) {
+                fontSize *= 0.8;
+            } else if (maxCharsPerLine > 40) {
+                fontSize *= 0.9;
+            }
+            
+            return fontSize;
+        }
+
+        // Receive text
+        socket.on('ricevi-testo', (testo) => {
+            console.log('✓ Testo ricevuto:', testo);
+            testoDisplay.classList.remove('fade-in');
+            
+            // Calcola font size ottimale
+            const fontSize = calcolaFontSize(testo);
+            testoDisplay.style.fontSize = `${fontSize}vw`;
+            testoDisplay.style.lineHeight = '1.4';
+            testoDisplay.textContent = testo;
+            
+            requestAnimationFrame(() => testoDisplay.classList.add('fade-in'));
+        });
+        
+        // Clear display
+        socket.on('svuota-testo', () => {
+            console.log('🗑️ Display svuotato');
+            testoDisplay.classList.remove('fade-in');
+            testoDisplay.style.fontSize = '4vw';
+            testoDisplay.style.lineHeight = '1.5';
+            testoDisplay.textContent = 'In attesa del testo dalla regia...';
+            requestAnimationFrame(() => testoDisplay.classList.add('fade-in'));
+        });
+        
+        // Connection status
+        socket.on('connect', () => console.log('✓ Display connesso'));
+        socket.on('disconnect', () => console.log('✗ Display disconnesso'));
+
+        // Ricalcola font size al resize
+        window.addEventListener('resize', () => {
+            const testo = testoDisplay.textContent;
+            if (testo !== 'In attesa del testo dalla regia...') {
+                const fontSize = calcolaFontSize(testo);
+                testoDisplay.style.fontSize = `${fontSize}vw`;
+            }
+        });
+
+        // Hide cursor after inactivity
+        let cursorTimeout;
+        document.addEventListener('mousemove', () => {
+            document.body.style.cursor = 'default';
+            clearTimeout(cursorTimeout);
+            cursorTimeout = setTimeout(() => {
+                document.body.style.cursor = 'none';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 // server.js
 const express = require('express');
+const path = require('path');
 const app = express();
 const http = require('http').createServer(app);
 const { Server } = require("socket.io");
@@ -7,8 +8,23 @@ const io = new Server(http);
 
 const port = 3000;
 
-// Serve i file HTML statici
-app.use(express.static(__dirname));
+// Serve i file statici dalla cartella 'views'
+app.use(express.static(path.join(__dirname, 'views')));
+
+// Route per index.html (homepage)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+// Route per control.html
+app.get('/control', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'pages', 'control.html'));
+});
+
+// Route per display.html
+app.get('/display', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'pages', 'display.html'));
+});
 
 // Gestione connessioni WebSocket
 io.on('connection', (socket) => {
@@ -36,6 +52,7 @@ io.on('connection', (socket) => {
 // Avvia server
 http.listen(port, () => {
   console.log(`\n🚀 Server avviato sulla porta ${port}`);
-  console.log(`📱 Regia: http://localhost:${port}/control.html`);
-  console.log(`📺 Display: http://localhost:${port}/display.html\n`);
+  console.log(`🏠 Homepage: http://localhost:${port}/`);
+  console.log(`📱 Control: http://localhost:${port}/control`);
+  console.log(`📺 Display: http://localhost:${port}/display\n`);
 });

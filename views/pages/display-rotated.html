@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display Palco</title>
+    <title>Display Palco Rotato</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts - Noto Serif Sinhala -->
@@ -41,13 +41,40 @@
             font-variation-settings: "wdth" 100.5;
         }
 
-        #container {
+        /* Container per la rotazione */
+        #rotationWrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100vw;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 4vh 4vw;
+        }
+
+        #container {
+            transition: transform 0.3s ease;
+        }
+
+        #container.rotated {
+            transform: rotate(90deg);
+            width: 100vh;
+            height: 100vw;
+        }
+
+        #container.normal {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #innerContainer {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4%;
         }
 
         #testoDisplay {
@@ -60,15 +87,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px; 
-            line-height: 1.5;
+            font-size: 40px;      
+            line-height: 1.5; 
         }
     </style>
 </head>
 <body class="bg-[#0D0D0D]">
     
-    <div id="container">
-        <pre id="testoDisplay" class="noto-serif-sinhala fade-in">In attesa del testo dalla regia...</pre>
+    <div id="rotationWrapper">
+        <div id="container" class="rotated">
+            <div id="innerContainer">
+                <pre id="testoDisplay" class="noto-serif-sinhala fade-in">In attesa del testo dalla regia...</pre>
+            </div>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -76,15 +107,17 @@
         const socket = io();
         const testoDisplay = document.getElementById('testoDisplay');
         const container = document.getElementById('container');
+        const innerContainer = document.getElementById('innerContainer');
+        let isRotated = true;
 
         // Funzione per trovare la dimensione ottimale del font usando binary search
-        function trovaFontSizeOttimale(elemento, testo, containerWidth, containerHeight) {
+        function trovaFontSizeOttimale(elemento, testo) {
             // Range di ricerca: da 10px a 500px
             let minSize = 10;
             let maxSize = 500;
             let optimalSize = minSize;
             
-            // Salva lo stile originale
+            // Salva il testo originale
             const originalText = elemento.textContent;
             elemento.textContent = testo;
             
@@ -120,18 +153,8 @@
         function applicaTesto(testo) {
             testoDisplay.classList.remove('fade-in');
             
-            // Ottieni le dimensioni del container
-            const containerRect = container.getBoundingClientRect();
-            const containerWidth = containerRect.width;
-            const containerHeight = containerRect.height;
-            
             // Trova la dimensione ottimale
-            const fontSize = trovaFontSizeOttimale(
-                testoDisplay, 
-                testo, 
-                containerWidth, 
-                containerHeight
-            );
+            const fontSize = trovaFontSizeOttimale(testoDisplay, testo);
             
             // Applica il testo e le dimensioni
             testoDisplay.textContent = testo;
@@ -143,7 +166,7 @@
                 testoDisplay.classList.add('fade-in');
             });
             
-            console.log(`✓ Font size applicato: ${fontSize}px per ${testo.split('\n').length} righe`);
+            console.log(`✓ Font size applicato: ${fontSize}px per ${testo.split('\n').length} righe (rotated: ${isRotated})`);
         }
 
         // Ricevi testo dal server
@@ -164,9 +187,26 @@
             });
         });
         
+        // Gestione rotazione
+        socket.on('set-rotation', (shouldRotate) => {
+            console.log('🔄 Toggle rotazione:', shouldRotate);
+            isRotated = shouldRotate;
+            
+            container.classList.remove('rotated', 'normal');
+            container.classList.add(shouldRotate ? 'rotated' : 'normal');
+            
+            // Ricalcola dimensioni del testo dopo la rotazione
+            setTimeout(() => {
+                const testo = testoDisplay.textContent;
+                if (testo !== 'In attesa del testo dalla regia...') {
+                    applicaTesto(testo);
+                }
+            }, 350); // Aspetta che finisca l'animazione CSS
+        });
+        
         // Connection status
-        socket.on('connect', () => console.log('✓ Display connesso'));
-        socket.on('disconnect', () => console.log('✗ Display disconnesso'));
+        socket.on('connect', () => console.log('✓ Display rotato connesso'));
+        socket.on('disconnect', () => console.log('✗ Display rotato disconnesso'));
 
         // Ricalcola dimensioni al resize della finestra
         let resizeTimeout;
@@ -188,6 +228,11 @@
             cursorTimeout = setTimeout(() => {
                 document.body.style.cursor = 'none';
             }, 3000);
+        });
+
+        // Inizializza con orientamento corretto
+        window.addEventListener('load', () => {
+            container.classList.add('rotated');
         });
     </script>
 </body>

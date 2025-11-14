@@ -1,13 +1,16 @@
 {
   "name": "proiettore-testi",
-  "version": "1.0.0",
-  "description": "Server per testi in tempo reale",
+  "version": "2.0.0",
+  "description": "Server per testi in tempo reale con autenticazione",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "socket.io": "^4.7.2"
   }
 }

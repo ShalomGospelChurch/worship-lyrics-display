@@ -26,66 +26,78 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+<body class="h-screen bg-gray-50 dark:bg-gray-900 transition-colors overflow-hidden">
     
-    <div class="container mx-auto px-4 py-6 max-w-5xl">
+    <div class="h-full flex flex-col p-3 md:p-4">
         
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+        <div class="flex justify-between items-center mb-3 flex-shrink-0">
+            <!-- Easter Egg Title - cursore normale -->
+            <h1 id="headerTitle" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white select-none">
                 Pannello Regia Canti
             </h1>
             
-            <!-- Theme Dropdown -->
-            <div class="relative">
+            <div class="flex gap-2 items-center">
+                <!-- Theme Dropdown -->
                 <select id="themeSelect" 
-                        class="px-4 py-2 pr-10 bg-white dark:bg-gray-800 
+                        class="px-3 py-1.5 text-sm bg-white dark:bg-gray-800 
                                border border-gray-300 dark:border-gray-700 
                                rounded-lg text-gray-900 dark:text-white
                                focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                               cursor-pointer appearance-none">
+                               cursor-pointer">
                     <option value="light">☀️ Chiaro</option>
                     <option value="dark">🌙 Scuro</option>
                     <option value="system">💻 Sistema</option>
                 </select>
-                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </div>
+                
+                <!-- Admin Menu Button (hidden by default) -->
+                <button 
+                    id="adminMenuBtn"
+                    class="hidden px-3 py-1.5 text-sm bg-purple-600 hover:bg-purple-700 
+                           text-white font-medium rounded-lg transition-colors">
+                    ⚙️ Admin
+                </button>
+                
+                <!-- Logout Button -->
+                <button 
+                    id="logoutBtn"
+                    class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 
+                           text-white font-medium rounded-lg transition-colors">
+                    🚪 Esci
+                </button>
             </div>
         </div>
         
         <!-- Main Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-1 flex flex-col overflow-hidden">
             
             <!-- Textarea -->
-            <div class="mb-4">
+            <div class="flex-1 flex flex-col min-h-0">
                 <label for="testoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Testo del canto
                 </label>
                 <textarea 
                     id="testoInput" 
                     placeholder="Incolla o scrivi qui il testo del canto..."
-                    class="w-full h-96 px-4 py-3 text-base noto-serif-sinhala
+                    class="flex-1 w-full px-3 py-2 text-base noto-serif-sinhala
                            border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-900 
                            text-gray-900 dark:text-white
                            placeholder-gray-400 dark:placeholder-gray-500
                            focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                           resize-none"
+                           resize-none overflow-y-auto"
                 ></textarea>
-                <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     <span id="charCount">0</span> caratteri
                 </div>
             </div>
             
-            <!-- Buttons -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Buttons - solo Invia e Svuota -->
+            <div class="grid grid-cols-2 gap-3 mt-3 flex-shrink-0">
                 <button 
                     id="inviaBtn"
                     class="px-6 py-3 bg-blue-600 hover:bg-blue-700 
-                           text-white font-medium rounded-lg
+                           text-white font-semibold rounded-lg text-base
                            transition-colors flex items-center justify-center gap-2">
                     <span>📤 Invia al Palco</span>
                 </button>
@@ -93,25 +105,84 @@
                 <button 
                     id="svuotaBtn"
                     class="px-6 py-3 bg-red-600 hover:bg-red-700 
-                           text-white font-medium rounded-lg
+                           text-white font-semibold rounded-lg text-base
                            transition-colors flex items-center justify-center gap-2">
                     <span>🗑️ Svuota Display</span>
                 </button>
             </div>
             
             <!-- Connection Status -->
-            <div class="mt-4 flex items-center justify-center gap-2 text-sm">
+            <div class="mt-2 flex items-center justify-center gap-2 text-xs flex-shrink-0">
                 <div id="statusDot" class="w-2 h-2 rounded-full bg-gray-400"></div>
                 <span id="statusText" class="text-gray-500 dark:text-gray-400">Connessione in corso...</span>
             </div>
         </div>
     </div>
     
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-sm w-full p-6">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Conferma uscita</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">Sei sicuro di voler uscire?</p>
+            
+            <div class="flex gap-3">
+                <button id="cancelLogout" 
+                        class="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-medium transition-colors">
+                    Annulla
+                </button>
+                <button id="confirmLogout" 
+                        class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                    Esci
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Modal -->
+    <div id="adminModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">⚙️ Menu Admin</h2>
+                <button id="closeAdminModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl">
+                    ✕
+                </button>
+            </div>
+            
+            <div class="space-y-3">
+                <a href="/change-password" 
+                   class="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-colors">
+                    🔑 Cambia la mia Password
+                </a>
+                
+                <a href="/admin-reset" 
+                   class="block w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-center font-medium transition-colors">
+                    👤 Reset Password Utente
+                </a>
+                
+                <button id="dashboardBtn"
+                        class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                    📊 Dashboard & Statistiche
+                </button>
+                
+                <button id="userManagementBtn"
+                        class="w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors"
+                        onclick="window.location.href='/user-management'">
+                    👥 Gestione Utenti
+                </button>
+                
+                <button id="logsBtn"
+                        class="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">
+                    📝 Log Attività
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Toast -->
     <div id="toast" 
-         class="fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg
+         class="fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg
                 transform translate-y-24 opacity-0 transition-all duration-300
-                flex items-center gap-2 z-50">
+                flex items-center gap-2 z-50 text-sm">
         <span id="toastMessage"></span>
     </div>
 
@@ -122,12 +193,109 @@
         const testoInput = document.getElementById('testoInput');
         const inviaBtn = document.getElementById('inviaBtn');
         const svuotaBtn = document.getElementById('svuotaBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
         const charCount = document.getElementById('charCount');
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
         const themeSelect = document.getElementById('themeSelect');
+        const headerTitle = document.getElementById('headerTitle');
+        const adminMenuBtn = document.getElementById('adminMenuBtn');
+        const adminModal = document.getElementById('adminModal');
+        const closeAdminModal = document.getElementById('closeAdminModal');
+        const logoutModal = document.getElementById('logoutModal');
+        const cancelLogout = document.getElementById('cancelLogout');
+        const confirmLogout = document.getElementById('confirmLogout');
+
+        let clickCount = 0;
+        let clickTimeout = null;
+
+        // Easter Egg: 8 clicks sul titolo (cursore normale, invisibile)
+        headerTitle.addEventListener('click', () => {
+            clickCount++;
+            
+            clearTimeout(clickTimeout);
+            clickTimeout = setTimeout(() => {
+                clickCount = 0;
+            }, 2000);
+            
+            if (clickCount === 8) {
+                activateAdminMode();
+                clickCount = 0;
+            }
+        });
+
+        function activateAdminMode() {
+            fetch('/api/check-admin')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.isAdmin) {
+                        adminMenuBtn.classList.remove('hidden');
+                        mostraToast('🔓 Modalità Admin attivata!', 'info');
+                    } else {
+                        mostraToast('⚠️ Non sei un amministratore', 'error');
+                    }
+                })
+                .catch(() => {
+                    mostraToast('❌ Errore verifica permessi', 'error');
+                });
+        }
+
+        // Admin modal
+        adminMenuBtn.addEventListener('click', () => {
+            adminModal.classList.remove('hidden');
+        });
+
+        closeAdminModal.addEventListener('click', () => {
+            adminModal.classList.add('hidden');
+        });
+
+        adminModal.addEventListener('click', (e) => {
+            if (e.target === adminModal) {
+                adminModal.classList.add('hidden');
+            }
+        });
+
+        // Coming soon buttons
+        document.getElementById('dashboardBtn')?.addEventListener('click', () => {
+            mostraToast('📊 Dashboard in arrivo!', 'info');
+        });
+        
+        document.getElementById('userManagementBtn')?.addEventListener('click', () => {
+            mostraToast('👥 Gestione utenti in arrivo!', 'info');
+        });
+        
+        document.getElementById('logsBtn')?.addEventListener('click', () => {
+            mostraToast('📝 Log attività in arrivo!', 'info');
+        });
+
+        // Logout con conferma
+        logoutBtn.addEventListener('click', () => {
+            logoutModal.classList.remove('hidden');
+        });
+
+        cancelLogout.addEventListener('click', () => {
+            logoutModal.classList.add('hidden');
+        });
+
+        confirmLogout.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Errore logout:', error);
+                mostraToast('❌ Errore durante il logout', 'error');
+            }
+        });
+
+        logoutModal.addEventListener('click', (e) => {
+            if (e.target === logoutModal) {
+                logoutModal.classList.add('hidden');
+            }
+        });
 
         // Theme Management
         function getSystemTheme() {
@@ -145,7 +313,6 @@
             }
         }
 
-        // Initialize theme
         const savedTheme = localStorage.getItem('theme') || 'system';
         themeSelect.value = savedTheme;
         setTheme(savedTheme);
@@ -154,7 +321,6 @@
             setTheme(e.target.value);
         });
 
-        // Listen for system theme changes
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
             if (localStorage.getItem('theme') === 'system') {
                 setTheme('system');
@@ -171,20 +337,19 @@
             const colors = {
                 success: 'bg-green-600 text-white',
                 error: 'bg-red-600 text-white',
-                warning: 'bg-yellow-500 text-gray-900'
+                warning: 'bg-yellow-500 text-gray-900',
+                info: 'bg-purple-600 text-white'
             };
             
             toastMessage.textContent = messaggio;
-            toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-lg
-                              flex items-center gap-2 z-50 ${colors[tipo]}`;
+            toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg
+                              flex items-center gap-2 z-50 text-sm ${colors[tipo]}`;
             
-            // Show
             requestAnimationFrame(() => {
                 toast.classList.remove('translate-y-24', 'opacity-0');
                 toast.classList.add('translate-y-0', 'opacity-100');
             });
             
-            // Hide after 3s
             setTimeout(() => {
                 toast.classList.add('translate-y-24', 'opacity-0');
                 toast.classList.remove('translate-y-0', 'opacity-100');
@@ -226,14 +391,14 @@
             console.log('✓ Connesso al server');
             statusDot.className = 'w-2 h-2 rounded-full bg-green-500';
             statusText.textContent = 'Connesso';
-            statusText.className = 'text-green-600 dark:text-green-400';
+            statusText.className = 'text-green-600 dark:text-green-400 text-xs';
         });
         
         socket.on('disconnect', () => {
             console.log('✗ Disconnesso dal server');
             statusDot.className = 'w-2 h-2 rounded-full bg-red-500 animate-pulse';
             statusText.textContent = 'Disconnesso';
-            statusText.className = 'text-red-600 dark:text-red-400';
+            statusText.className = 'text-red-600 dark:text-red-400 text-xs';
             mostraToast('⚠️ Connessione persa!', 'error');
         });
     </script>

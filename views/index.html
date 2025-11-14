@@ -46,6 +46,15 @@
                           flex items-center justify-center gap-2">
                     <span>🖥️</span>
                     <span>Display</span>
+                
+                </a>
+                                <a href="/display-rotated" 
+                   class="block w-full px-6 py-4 bg-green-600 hover:bg-green-700 
+                          text-white font-semibold rounded-lg text-center
+                          transition-all transform hover:scale-105 active:scale-95
+                          flex items-center justify-center gap-2">
+                    <span>🔄</span>
+                    <span>Rotated-Display</span>
                 </a>
             </div>
             
@@ -59,19 +68,19 @@
         
         <!-- Theme toggle (optional) -->
         <div class="mt-4 flex justify-center">
-            <select id="themeSelect" 
-                    class="px-4 py-2 bg-white dark:bg-gray-800 
-                           border border-gray-300 dark:border-gray-700 
-                           rounded-lg text-sm text-gray-900 dark:text-white
-                           focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                           cursor-pointer">
-                <option value="light"><i class="fa-solid fa-sun"></i> Chiaro</option>
-                <option value="dark"><i class="fa-solid fa-moon"></i> Scuro</option>
-                <option value="system"><i class="fa-solid fa-laptop"></i> Sistema</option>
-            </select>
+           <select id="themeSelect" 
+                        class="px-3 py-1.5 text-sm bg-white dark:bg-gray-800 
+                               border border-gray-300 dark:border-gray-700 
+                               rounded-lg text-gray-900 dark:text-white
+                               focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                               cursor-pointer ">
+                    <option value="light">☀️ Chiaro</option>
+                    <option value="dark">🌙 Scuro</option>
+                    <option value="system">💻 Sistema</option>
+                </select>
         </div>
     </div>
-
+    
     <script src="https://kit.fontawesome.com/59da5544ae.js" crossorigin="anonymous"></script>
     <script>
         const html = document.documentElement;

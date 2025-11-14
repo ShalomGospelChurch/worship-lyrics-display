@@ -50,12 +50,11 @@
                     <option value="system">💻 Sistema</option>
                 </select>
                 
-                <!-- Admin Menu Button (hidden by default) -->
+                <!-- Settings Button (always visible, color based on role) -->
                 <button 
                     id="adminMenuBtn"
-                    class="hidden px-3 py-1.5 text-sm bg-purple-600 hover:bg-purple-700 
-                           text-white font-medium rounded-lg transition-colors">
-                    ⚙️ Admin
+                    class="px-3 py-1.5 text-sm text-white font-medium rounded-lg transition-colors">
+                    ⚙️ 
                 </button>
                 
                 <!-- Logout Button -->
@@ -138,42 +137,18 @@
         </div>
     </div>
     
-    <!-- Admin Modal -->
+    <!-- Settings/Admin Modal -->
     <div id="adminModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-md w-full p-6">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">⚙️ Menu Admin</h2>
+                <h2 id="modalTitle" class="text-xl font-bold text-gray-900 dark:text-white">⚙️ Menu</h2>
                 <button id="closeAdminModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl">
                     ✕
                 </button>
             </div>
             
-            <div class="space-y-3">
-                <a href="/change-password" 
-                   class="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-colors">
-                    🔑 Cambia la mia Password
-                </a>
-                
-                <a href="/admin-reset" 
-                   class="block w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-center font-medium transition-colors">
-                    👤 Reset Password Utente
-                </a>
-                
-                <button id="dashboardBtn"
-                        class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                    📊 Dashboard & Statistiche
-                </button>
-                
-                <button id="userManagementBtn"
-                        class="w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors"
-                        onclick="window.location.href='/user-management'">
-                    👥 Gestione Utenti
-                </button>
-                
-                <button id="logsBtn"
-                        class="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">
-                    📝 Log Attività
-                </button>
+            <div id="menuContent" class="space-y-3">
+                <!-- Menu items will be populated by JavaScript -->
             </div>
         </div>
     </div>
@@ -203,6 +178,8 @@
         const headerTitle = document.getElementById('headerTitle');
         const adminMenuBtn = document.getElementById('adminMenuBtn');
         const adminModal = document.getElementById('adminModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const menuContent = document.getElementById('menuContent');
         const closeAdminModal = document.getElementById('closeAdminModal');
         const logoutModal = document.getElementById('logoutModal');
         const cancelLogout = document.getElementById('cancelLogout');
@@ -210,8 +187,26 @@
 
         let clickCount = 0;
         let clickTimeout = null;
+        let adminModeUnlocked = false; // Flag per admin mode
 
-        // Easter Egg: 8 clicks sul titolo (cursore normale, invisibile)
+        // Imposta colore bottone in base al ruolo al caricamento
+        fetch('/api/check-admin')
+            .then(res => res.json())
+            .then(data => {
+                if (data.isAdmin) {
+                    // Admin: bottone viola
+                    adminMenuBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
+                } else {
+                    // Regia: bottone blu
+                    adminMenuBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                }
+            })
+            .catch(() => {
+                // Errore: default blu
+                adminMenuBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            });
+
+        // Easter Egg: 8 clicks sul titolo (solo per admin)
         headerTitle.addEventListener('click', () => {
             clickCount++;
             
@@ -221,30 +216,107 @@
             }, 2000);
             
             if (clickCount === 8) {
-                activateAdminMode();
+                unlockAdminFeatures();
                 clickCount = 0;
             }
         });
 
-        function activateAdminMode() {
+        function unlockAdminFeatures() {
             fetch('/api/check-admin')
                 .then(res => res.json())
                 .then(data => {
                     if (data.isAdmin) {
-                        adminMenuBtn.classList.remove('hidden');
-                        mostraToast('🔓 Modalità Admin attivata!', 'info');
-                    } else {
-                        mostraToast('⚠️ Non sei un amministratore', 'error');
+                        // Sblocca funzioni admin
+                        adminModeUnlocked = true;
+                        adminMenuBtn.textContent = '⚙️ Admin';
+                        // Cambia da viola a rosso
+                        adminMenuBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                        adminMenuBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
+                        mostraToast('🔓 Funzionalità Admin sbloccate!', 'success');
                     }
+                    // Se non è admin: silenzio totale, nessun feedback
                 })
                 .catch(() => {
-                    mostraToast('❌ Errore verifica permessi', 'error');
+                    // Errore silenzioso anche qui
                 });
+        }
+
+        // Popola menu in base al ruolo e admin mode
+        function populateMenu(isAdmin) {
+            menuContent.innerHTML = '';
+            
+            if (isAdmin && adminModeUnlocked) {
+                // Menu Admin completo (solo se sbloccato)
+                modalTitle.textContent = '⚙️ Menu Admin';
+                
+                menuContent.innerHTML = `
+                    <a href="/user-management" 
+                       class="block w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-center font-medium transition-colors">
+                        👥 Gestione Utenti
+                    </a>
+                    
+                    <a href="/admin-reset" 
+                       class="block w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-center font-medium transition-colors">
+                        🔄 Reset Password Utenti
+                    </a>
+                    
+                    <a href="/change-password" 
+                       class="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-colors">
+                        🔑 Cambia la mia Password
+                    </a>
+                    
+                    <button id="dashboardBtn"
+                            class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
+                        📊 Dashboard (Coming Soon)
+                    </button>
+                    
+                    <button id="logsBtn"
+                            class="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">
+                        📝 Log Attività (Coming Soon)
+                    </button>
+                `;
+                
+                // Attach event listeners per coming soon
+                setTimeout(() => {
+                    document.getElementById('dashboardBtn')?.addEventListener('click', () => {
+                        mostraToast('📊 Dashboard in arrivo!', 'info');
+                    });
+                    
+                    document.getElementById('logsBtn')?.addEventListener('click', () => {
+                        mostraToast('📝 Log attività in arrivo!', 'info');
+                    });
+                }, 100);
+                
+            } else {
+                // Menu base per tutti (Regia o Admin non sbloccato)
+                modalTitle.textContent = '⚙️ Impostazioni';
+                
+                menuContent.innerHTML = `
+                    <a href="/change-password" 
+                       class="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-colors">
+                        🔑 Cambia la mia Password
+                    </a>
+                    
+                    <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                            💡 Funzioni base disponibili
+                        </p>
+                    </div>
+                `;
+            }
         }
 
         // Admin modal
         adminMenuBtn.addEventListener('click', () => {
-            adminModal.classList.remove('hidden');
+            fetch('/api/check-admin')
+                .then(res => res.json())
+                .then(data => {
+                    populateMenu(data.isAdmin);
+                    adminModal.classList.remove('hidden');
+                })
+                .catch(() => {
+                    mostraToast('❌ Errore caricamento menu', 'error');
+                });
         });
 
         closeAdminModal.addEventListener('click', () => {
@@ -255,19 +327,6 @@
             if (e.target === adminModal) {
                 adminModal.classList.add('hidden');
             }
-        });
-
-        // Coming soon buttons
-        document.getElementById('dashboardBtn')?.addEventListener('click', () => {
-            mostraToast('📊 Dashboard in arrivo!', 'info');
-        });
-        
-        document.getElementById('userManagementBtn')?.addEventListener('click', () => {
-            mostraToast('👥 Gestione utenti in arrivo!', 'info');
-        });
-        
-        document.getElementById('logsBtn')?.addEventListener('click', () => {
-            mostraToast('📝 Log attività in arrivo!', 'info');
         });
 
         // Logout con conferma

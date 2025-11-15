@@ -1,0 +1,22 @@
+body {
+    font-family: 'Noto Serif Sinhala Condensed', serif;
+    background: #0D0D0D;
+}
+
+.bg-black-1 {
+    background: #0D0D0D;
+}
+
+.bg-black-2 {
+    background: rgb(29, 30, 38);
+}
+
+.noto-serif-sinhala-700 {
+    font-family: "Noto Serif Sinhala", serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    font-variation-settings: "wdth" 100.5;
+}
+
+

@@ -44,6 +44,9 @@ app.get('/login', (req, res) => {
 app.get('/display', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'pages', 'display.html'));
 });
+app.get('/tablet', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'pages', 'tablet.html'));
+});
 
 app.get('/display-rotated', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'pages', 'display-rotated.html'));

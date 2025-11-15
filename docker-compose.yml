@@ -6,4 +6,7 @@ services:
     build: .
     ports:
       - "3000:3000"
-    restart: unless-stoppedzuc
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules

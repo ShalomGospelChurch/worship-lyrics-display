@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Palco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts - Noto Serif Sinhala -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .noto-serif-sinhala {
+            font-family: "Noto Serif Sinhala", serif;
+            font-optical-sizing: auto;
+            font-weight: 700;
+            font-style: normal;
+            font-variation-settings: "wdth" 100.5;
+        }
+
+        #container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4vh 4vw;
+        }
+
+        #testoDisplay {
+            color: white;
+            text-align: center;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 100%;
+            max-height: 100%;
+            /*
+             display: flex;          <-- RIMUOVI
+             align-items: center;    <-- RIMUOVI
+             justify-content: center;<-- RIMUOVI
+             */
+            font-size: 40px; 
+            line-height: 1.5;
+        }
+
+        /* --- CSS PER IL BOTTONE FULLSCREEN --- */
+        #fullscreenBtn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            opacity: 0.3; /* Inizia semi-trasparente */
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-[#0D0D0D]">
+
+    <button id="fullscreenBtn">Fullscreen</button>
+
+    <div id="container">
+        <pre id="testoDisplay" class="noto-serif-sinhala fade-in">In attesa del testo dalla regia...</pre>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const testoDisplay = document.getElementById('testoDisplay');
+        const container = document.getElementById('container');
+
+        const testoDefault = 'In attesa del testo dalla regia...';
+
+        // Funzione per trovare la dimensione ottimale del font usando binary search
+        function trovaFontSizeOttimale(elemento, testo, containerWidth, containerHeight) {
+            let minSize = 10;
+            let maxSize = 500;
+            let optimalSize = minSize;
+
+            // Salva lo stile originale
+            const originalText = elemento.textContent;
+            const originalWhiteSpace = elemento.style.whiteSpace;
+
+            elemento.textContent = testo;
+
+            // Binary search per trovare la dimensione massima che entra
+            while (minSize <= maxSize) {
+                const midSize = Math.floor((minSize + maxSize) / 2);
+                elemento.style.fontSize = midSize + 'px';
+                elemento.style.lineHeight = '1.4';
+
+                // --- MODIFICA CHIAVE ---
+                // Applica temporaneamente 'pre' per impedire l'a-capo
+                // Ora scrollWidth sarà la larghezza della riga più lunga
+                elemento.style.whiteSpace = 'pre';
+
+                // Forza il reflow per ottenere dimensioni accurate
+                elemento.offsetHeight;
+
+                const scrollWidth = elemento.scrollWidth;
+                const scrollHeight = elemento.scrollHeight;
+                const clientWidth = elemento.clientWidth;
+                const clientHeight = elemento.clientHeight;
+
+                // Controlla se il testo (ORA non-wrappato) entra nel box
+                // Ho rimosso il "+ 2" per essere più stringenti
+                const fits = (scrollWidth <= clientWidth) && (scrollHeight <= clientHeight);
+
+                if (fits) {
+                    optimalSize = midSize;
+                    minSize = midSize + 1; // Va bene, prova più grande
+                } else {
+                    maxSize = midSize - 1; // Troppo grande, prova più piccolo
+                }
+            }
+
+            // Ripristina lo stile originale per il rendering finale
+            elemento.style.whiteSpace = originalWhiteSpace;
+
+            return optimalSize;
+        }
+
+        // Funzione per applicare il testo con dimensione ottimale
+        function applicaTesto(testo) {
+            testoDisplay.classList.remove('fade-in');
+
+            const containerRect = container.getBoundingClientRect();
+            const containerWidth = containerRect.width;
+            const containerHeight = containerRect.height;
+
+            const fontSize = trovaFontSizeOttimale(
+                testoDisplay,
+                testo,
+                containerWidth,
+                containerHeight
+            );
+
+            // Applica il testo e le dimensioni
+            testoDisplay.textContent = testo;
+            testoDisplay.style.fontSize = fontSize + 'px';
+            testoDisplay.style.lineHeight = '1.4';
+
+            // --- AGGIUNTA DI SICUREZZA ---
+            // Assicura che il rendering finale usi 'pre-wrap'
+            testoDisplay.style.whiteSpace = 'pre-wrap';
+
+            requestAnimationFrame(() => {
+                testoDisplay.classList.add('fade-in');
+            });
+
+            console.log(`✓ Font size applicato: ${fontSize}px`);
+        }
+
+        // Funzione per mostrare il testo di default
+        function mostraDefault() {
+            console.log('🗑️ Display svuotato, mostro testo default');
+            testoDisplay.classList.remove('fade-in');
+            testoDisplay.style.fontSize = '40px'; // Resetta a dimensione fissa
+            testoDisplay.style.lineHeight = '1.5';
+            testoDisplay.textContent = testoDefault;
+            requestAnimationFrame(() => {
+                testoDisplay.classList.add('fade-in');
+            });
+        }
+
+        // --- GESTIONE EVENTI MODIFICATA ---
+
+        // Ricevi testo dal server
+        socket.on('ricevi-testo', (testo) => {
+            console.log('✓ Testo ricevuto:', testo);
+
+            // Se il testo è vuoto (inviato dal pulsante "Svuota"),
+            // mostra il messaggio di default.
+            if (testo === '') {
+                mostraDefault();
+            } else {
+                applicaTesto(testo);
+            }
+        });
+
+        // 'svuota-testo' è stato rimosso perché non è mai chiamato
+
+        // Connection status
+        socket.on('connect', () => console.log('✓ Display connesso'));
+        socket.on('disconnect', () => console.log('✗ Display disconnesso'));
+
+        // Ricalcola dimensioni al resize della finestra
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const testo = testoDisplay.textContent;
+                if (testo !== testoDefault && testo !== '') {
+                    applicaTesto(testo);
+                }
+            }, 100);
+        });
+
+        // --- LOGICA FULLSCREEN AGGIUNTA ---
+        function toggleFullScreen() {
+            if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, Opera
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                    document.documentElement.msRequestFullscreen();
+                }
+                fullscreenBtn.textContent = 'Esci Fullscreen';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+                fullscreenBtn.textContent = 'Fullscreen';
+            }
+        }
+        fullscreenBtn.addEventListener('click', toggleFullScreen);
+        // --- FINE LOGICA FULLSCREEN ---
+
+
+        // --- GESTIONE CURSORE (MODIFICATA) ---
+        // Nascondi cursore e bottone dopo inattività
+        let cursorTimeout;
+        document.addEventListener('mousemove', () => {
+            document.body.style.cursor = 'default';
+            fullscreenBtn.style.opacity = '1'; // Mostra il bottone
+
+            clearTimeout(cursorTimeout);
+            cursorTimeout = setTimeout(() => {
+                document.body.style.cursor = 'none';
+                fullscreenBtn.style.opacity = '0'; // Nasconde il bottone
+            }, 3000);
+        });
+
+        // Nascondi subito all'avvio
+        cursorTimeout = setTimeout(() => {
+            document.body.style.cursor = 'none';
+            fullscreenBtn.style.opacity = '0';
+        }, 3000);
+    </script>
+</body>
+</html>

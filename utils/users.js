@@ -12,35 +12,18 @@ function loadUsers() {
   if (!fs.existsSync(filePath)) {
     const defaultUsers = createDefaultUsers();
     saveUsers(defaultUsers);
-    console.log('✅ users.json creato con utenti di default');
-    console.log('⚠️  Cambia le password nel file .env!');
+    console.log('✅ users.json creato con utente di default');
     return defaultUsers;
   }
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
 function createDefaultUsers() {
-  // Usa password da .env se disponibili, altrimenti usa "password123"
+  // Usa password da .env se disponibile, altrimenti usa "sgc2024"
   return {
-    admin1: { 
-      name: 'Admin 1', 
-      role: 'admin', 
-      password: hashPassword(process.env.ADMIN1_PASSWORD || 'password123')
-    },
-    admin2: { 
-      name: 'Admin 2', 
-      role: 'admin', 
-      password: hashPassword(process.env.ADMIN2_PASSWORD || 'password123')
-    },
-    regia1: { 
-      name: 'Regia 1', 
-      role: 'regia', 
-      password: hashPassword(process.env.REGIA1_PASSWORD || 'password123')
-    },
-    regia2: { 
-      name: 'Regia 2', 
-      role: 'regia', 
-      password: hashPassword(process.env.REGIA2_PASSWORD || 'password123')
+    admin: { 
+      name: 'SGC Regia', 
+      password: hashPassword('admin')
     }
   };
 }

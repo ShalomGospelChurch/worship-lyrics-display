@@ -1,17 +1,6 @@
 {
-  "admin1": {
-    "name": "Admin 1",
-    "role": "admin",
-    "password": "$2b$10$Y7VjLeKbyN72AMkhdRhCGuGIfBy9/sg8ge7WKX9UO5DQUTDmiEG0e"
-  },
-  "regia1": {
-    "name": "testregia1",
-    "role": "regia",
-    "password": "$2b$10$cahdhlyUFskknK9yDGCGJue59Rrb1NgtvJ9htjt2ABwRsjSjWCogi"
-  },
-  "admin2": {
-    "name": "admin2",
-    "role": "admin",
-    "password": "$2b$10$GuRMHnkI/3BYOzi27g.l/OsUWvk2CSRsuPn8QF1Cny6shaSfXMy8G"
+  "admin": {
+    "name": "SGC Regia",
+    "password": "$2b$10$8d5JUWj9ljm6DYTTnR.XfO4b7.xlQ1G4Y9.yxvjs3J7NTiWrZOk.i"
   }
 }

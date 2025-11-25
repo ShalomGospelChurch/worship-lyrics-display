@@ -5,7 +5,6 @@ const http = require('http');
 const { Server } = require('socket.io');
 
 const { router: authRoutes, requireAuth } = require('./routes/auth');
-const { router: adminRoutes } = require('./routes/admin');
 
 const app = express();
 const server = http.createServer(app);
@@ -26,7 +25,6 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 // Rotte API
 app.use('/api', authRoutes);
-app.use('/api/admin', adminRoutes);
 
 // Pagine pubbliche
 app.get('/', (req, res) => {
@@ -34,7 +32,6 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  // Se già loggato, redirect a control
   if (req.session && req.session.userId) {
     return res.redirect('/control');
   }
@@ -44,6 +41,7 @@ app.get('/login', (req, res) => {
 app.get('/display', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'pages', 'display.html'));
 });
+
 app.get('/tablet', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'pages', 'tablet.html'));
 });
@@ -55,26 +53,6 @@ app.get('/display-rotated', (req, res) => {
 // Pagine protette (richiedono login)
 app.get('/control', requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'pages', 'control.html'));
-});
-
-app.get('/change-password', requireAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'pages', 'change-password.html'));
-});
-
-app.get('/admin-reset', requireAuth, (req, res) => {
-  // Solo admin possono accedere
-  if (req.session.role !== 'admin') {
-    return res.status(403).send('❌ Accesso negato - Solo per amministratori');
-  }
-  res.sendFile(path.join(__dirname, 'views', 'pages', 'admin-reset.html'));
-});
-
-app.get('/user-management', requireAuth, (req, res) => {
-  // Solo admin possono accedere
-  if (req.session.role !== 'admin') {
-    return res.status(403).send('❌ Accesso negato - Solo per amministratori');
-  }
-  res.sendFile(path.join(__dirname, 'views', 'pages', 'user-management.html'));
 });
 
 // WebSocket per real-time communication
@@ -110,13 +88,13 @@ server.listen(port, () => {
   console.log(`   🔒 Login:           http://localhost:${port}/login`);
   console.log(`   📱 Control Panel:   http://localhost:${port}/control`);
   console.log(`   📺 Display:         http://localhost:${port}/display`);
+  console.log(`   📱 Tablet:          http://localhost:${port}/tablet`);
   console.log(`   🔄 Display Rotato:  http://localhost:${port}/display-rotated`);
-  console.log(`   🔑 Cambia Password: http://localhost:${port}/change-password`);
-  console.log(`   👤 Admin Reset:     http://localhost:${port}/admin-reset`);
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-  console.log(`\n👥 Utenti di default:`);
-  console.log(`   Username: admin1 / admin2  |  Password: password123  |  Ruolo: admin`);
-  console.log(`   Username: regia1 / regia2  |  Password: password123  |  Ruolo: regia`);
-  console.log(`\n⚠️  IMPORTANTE: Cambia le password dopo il primo accesso!`);
+  console.log(`\n👤 Credenziali di accesso:`);
+  console.log(`   Username: admin`);
+  console.log(`   Password: admin`);
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
 });
+
+

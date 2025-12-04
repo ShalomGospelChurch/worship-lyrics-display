@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regia Testi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts - Noto Serif Sinhala -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@100..900&display=swap" rel="stylesheet">
-    
+
     <script>
         tailwind.config = {
             darkMode: 'class'
@@ -27,439 +26,268 @@
     </style>
 </head>
 <body class="h-screen bg-gray-50 dark:bg-gray-900 transition-colors overflow-hidden">
-    
-    <div class="h-full flex flex-col p-3 md:p-4">
-        
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-3 flex-shrink-0">
-            <!-- Easter Egg Title - cursore normale -->
-            <h1 id="headerTitle" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white select-none">
-                Pannello Regia Canti
-            </h1>
-            
-            <div class="flex gap-2 items-center">
-                <!-- Theme Dropdown -->
-                <select id="themeSelect" 
-                        class="px-3 py-1.5 text-sm bg-white dark:bg-gray-800 
-                               border border-gray-300 dark:border-gray-700 
+
+<div class="h-full flex flex-col p-3 md:p-4">
+
+    <div class="flex justify-between items-center mb-3 flex-shrink-0">
+        <h1 id="headerTitle" class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white select-none">
+            Pannello Regia Canti
+        </h1>
+
+        <div class="flex gap-2 items-center">
+            <select id="themeSelect"
+                    class="px-3 py-1.5 text-sm bg-white dark:bg-gray-800
+                               border border-gray-300 dark:border-gray-700
                                rounded-lg text-gray-900 dark:text-white
                                focus:ring-2 focus:ring-blue-500 focus:border-transparent
                                cursor-pointer">
-                    <option value="light">☀️ Chiaro</option>
-                    <option value="dark">🌙 Scuro</option>
-                    <option value="system">💻 Sistema</option>
-                </select>
-                
-                <!-- Settings Button (always visible, color based on role) -->
-                <button 
-                    id="adminMenuBtn"
-                    class="px-3 py-1.5 text-sm text-white font-medium rounded-lg transition-colors">
-                    ⚙️ 
-                </button>
-                
-                <!-- Logout Button -->
-                <button 
-                    id="logoutBtn"
-                    class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 
+                <option value="light">☀️ Chiaro</option>
+                <option value="dark">🌙 Scuro</option>
+                <option value="system">💻 Sistema</option>
+            </select>
+
+            <button id="logoutBtn"
+                    class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700
                            text-white font-medium rounded-lg transition-colors">
-                    🚪 Esci
-                </button>
-            </div>
+                🚪 Esci
+            </button>
         </div>
-        
-        <!-- Main Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-1 flex flex-col overflow-hidden">
-            
-            <!-- Textarea -->
-            <div class="flex-1 flex flex-col min-h-0">
-                <label for="testoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Testo del canto
-                </label>
-                <textarea 
-                    id="testoInput" 
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 md:p-4 flex-1 flex flex-col overflow-hidden">
+
+        <div class="flex-1 flex flex-col min-h-0">
+            <label for="testoInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Testo del canto
+            </label>
+            <textarea
+                    id="testoInput"
                     placeholder="Incolla o scrivi qui il testo del canto..."
                     class="flex-1 w-full px-3 py-2 text-base noto-serif-sinhala
                            border border-gray-300 dark:border-gray-600 rounded-lg
-                           bg-white dark:bg-gray-900 
+                           bg-white dark:bg-gray-900
                            text-gray-900 dark:text-white
                            placeholder-gray-400 dark:placeholder-gray-500
                            focus:ring-2 focus:ring-blue-500 focus:border-transparent
                            resize-none overflow-y-auto"
-                ></textarea>
-                <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    <span id="charCount">0</span> caratteri
-                </div>
+            ></textarea>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                <span id="charCount">0</span> caratteri
             </div>
-            
-            <!-- Buttons - solo Invia e Svuota -->
-            <div class="grid grid-cols-2 gap-3 mt-3 flex-shrink-0">
-                <button 
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 mt-3 flex-shrink-0">
+            <button
                     id="inviaBtn"
-                    class="px-6 py-3 bg-blue-600 hover:bg-blue-700 
+                    class="px-2 py-3 bg-blue-600 hover:bg-blue-700
                            text-white font-semibold rounded-lg text-base
                            transition-colors flex items-center justify-center gap-2">
-                    <span>📤 Invia al Palco</span>
-                </button>
-                
-                <button 
+                <span>📤 Invia</span>
+            </button>
+
+            <button
+                    id="syncBtn"
+                    class="px-2 py-3 bg-purple-600 hover:bg-purple-700
+                           text-white font-semibold rounded-lg text-base
+                           transition-colors flex items-center justify-center gap-2">
+                <span>🔄 Sync FreeShow</span>
+            </button>
+
+            <button
                     id="svuotaBtn"
-                    class="px-6 py-3 bg-red-600 hover:bg-red-700 
+                    class="px-2 py-3 bg-red-600 hover:bg-red-700
                            text-white font-semibold rounded-lg text-base
                            transition-colors flex items-center justify-center gap-2">
-                    <span>🗑️ Svuota Display</span>
-                </button>
-            </div>
-            
-            <!-- Connection Status -->
-            <div class="mt-2 flex items-center justify-center gap-2 text-xs flex-shrink-0">
-                <div id="statusDot" class="w-2 h-2 rounded-full bg-gray-400"></div>
-                <span id="statusText" class="text-gray-500 dark:text-gray-400">Connessione in corso...</span>
-            </div>
+                <span>🗑️ Svuota</span>
+            </button>
+        </div>
+
+        <div class="mt-2 flex items-center justify-center gap-2 text-xs flex-shrink-0">
+            <div id="statusDot" class="w-2 h-2 rounded-full bg-gray-400"></div>
+            <span id="statusText" class="text-gray-500 dark:text-gray-400">Connessione in corso...</span>
         </div>
     </div>
-    
-    <!-- Logout Confirmation Modal -->
-    <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-sm w-full p-6">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Conferma uscita</h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-6">Sei sicuro di voler uscire?</p>
-            
-            <div class="flex gap-3">
-                <button id="cancelLogout" 
-                        class="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-medium transition-colors">
-                    Annulla
-                </button>
-                <button id="confirmLogout" 
-                        class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
-                    Esci
-                </button>
-            </div>
+</div>
+
+<div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-sm w-full p-6">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Conferma uscita</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Sei sicuro di voler uscire?</p>
+
+        <div class="flex gap-3">
+            <button id="cancelLogout"
+                    class="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-medium transition-colors">
+                Annulla
+            </button>
+            <button id="confirmLogout"
+                    class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                Esci
+            </button>
         </div>
     </div>
-    
-    <!-- Settings/Admin Modal -->
-    <div id="adminModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-md w-full p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="modalTitle" class="text-xl font-bold text-gray-900 dark:text-white">⚙️ Menu</h2>
-                <button id="closeAdminModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl">
-                    ✕
-                </button>
-            </div>
-            
-            <div id="menuContent" class="space-y-3">
-                <!-- Menu items will be populated by JavaScript -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- Toast -->
-    <div id="toast" 
-         class="fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg
+</div>
+
+<div id="toast"
+     class="fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg
                 transform translate-y-24 opacity-0 transition-all duration-300
                 flex items-center gap-2 z-50 text-sm">
-        <span id="toastMessage"></span>
-    </div>
+    <span id="toastMessage"></span>
+</div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-        const html = document.documentElement;
-        const testoInput = document.getElementById('testoInput');
-        const inviaBtn = document.getElementById('inviaBtn');
-        const svuotaBtn = document.getElementById('svuotaBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        const charCount = document.getElementById('charCount');
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        const themeSelect = document.getElementById('themeSelect');
-        const headerTitle = document.getElementById('headerTitle');
-        const adminMenuBtn = document.getElementById('adminMenuBtn');
-        const adminModal = document.getElementById('adminModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const menuContent = document.getElementById('menuContent');
-        const closeAdminModal = document.getElementById('closeAdminModal');
-        const logoutModal = document.getElementById('logoutModal');
-        const cancelLogout = document.getElementById('cancelLogout');
-        const confirmLogout = document.getElementById('confirmLogout');
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const html = document.documentElement;
+    const testoInput = document.getElementById('testoInput');
+    const inviaBtn = document.getElementById('inviaBtn');
+    const svuotaBtn = document.getElementById('svuotaBtn');
+    const syncBtn = document.getElementById('syncBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+    const charCount = document.getElementById('charCount');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const themeSelect = document.getElementById('themeSelect');
+    const logoutModal = document.getElementById('logoutModal');
+    const cancelLogout = document.getElementById('cancelLogout');
+    const confirmLogout = document.getElementById('confirmLogout');
 
-        let clickCount = 0;
-        let clickTimeout = null;
-        let adminModeUnlocked = false; // Flag per admin mode
+    // --- FUNZIONE SYNC FREESHOW (AGGIORNATA POST) ---
+    async function syncFreeShow() {
+        try {
+            mostraToast('🔄 Sincronizzazione in corso...', 'info');
 
-        // Imposta colore bottone in base al ruolo al caricamento
-        fetch('/api/check-admin')
-            .then(res => res.json())
-            .then(data => {
-                if (data.isAdmin) {
-                    // Admin: bottone viola
-                    adminMenuBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
-                } else {
-                    // Regia: bottone blu
-                    adminMenuBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                }
-            })
-            .catch(() => {
-                // Errore: default blu
-                adminMenuBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            // CHIAMATA AL TUO SERVER (Il Proxy)
+            const response = await fetch('/api/proxy-freeshow', {
+                method: 'POST'
             });
 
-        // Easter Egg: 8 clicks sul titolo (solo per admin)
-        headerTitle.addEventListener('click', () => {
-            clickCount++;
-            
-            clearTimeout(clickTimeout);
-            clickTimeout = setTimeout(() => {
-                clickCount = 0;
-            }, 2000);
-            
-            if (clickCount === 8) {
-                unlockAdminFeatures();
-                clickCount = 0;
+            if (!response.ok) {
+                throw new Error('Errore nella comunicazione col server');
             }
-        });
 
-        function unlockAdminFeatures() {
-            fetch('/api/check-admin')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.isAdmin) {
-                        // Sblocca funzioni admin
-                        adminModeUnlocked = true;
-                        adminMenuBtn.textContent = '⚙️ Admin';
-                        // Cambia da viola a rosso
-                        adminMenuBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
-                        adminMenuBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
-                        mostraToast('🔓 Funzionalità Admin sbloccate!', 'success');
-                    }
-                    // Se non è admin: silenzio totale, nessun feedback
-                })
-                .catch(() => {
-                    // Errore silenzioso anche qui
-                });
-        }
+            const json = await response.json();
 
-        // Popola menu in base al ruolo e admin mode
-        function populateMenu(isAdmin) {
-            menuContent.innerHTML = '';
-            
-            if (isAdmin && adminModeUnlocked) {
-                // Menu Admin completo (solo se sbloccato)
-                modalTitle.textContent = '⚙️ Menu Admin';
-                
-                menuContent.innerHTML = `
-                    <a href="/user-management" 
-                       class="block w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-center font-medium transition-colors">
-                        👥 Gestione Utenti
-                    </a>
-                    
-                    <a href="/admin-reset" 
-                       class="block w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-center font-medium transition-colors">
-                        🔄 Reset Password Utenti
-                    </a>
-                    
-                    <a href="/change-password" 
-                       class="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-colors">
-                        🔑 Cambia la mia Password
-                    </a>
-                    
-                    <button id="dashboardBtn"
-                            class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
-                        📊 Dashboard (Coming Soon)
-                    </button>
-                    
-                    <button id="logsBtn"
-                            class="w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">
-                        📝 Log Attività (Coming Soon)
-                    </button>
-                `;
-                
-                // Attach event listeners per coming soon
-                setTimeout(() => {
-                    document.getElementById('dashboardBtn')?.addEventListener('click', () => {
-                        mostraToast('📊 Dashboard in arrivo!', 'info');
-                    });
-                    
-                    document.getElementById('logsBtn')?.addEventListener('click', () => {
-                        mostraToast('📝 Log attività in arrivo!', 'info');
-                    });
-                }, 100);
-                
+            if (json.data && json.data.value) {
+                let rawText = json.data.value;
+
+                // Pulizia tag [Versetto] ecc.
+                let cleanText = rawText.replace(/\[.*?\]/g, '');
+
+                // Pulizia spazi e righe vuote
+                cleanText = cleanText.trim();
+                cleanText = cleanText.replace(/\n\s*\n\s*\n/g, '\n\n');
+
+                testoInput.value = cleanText;
+                charCount.textContent = cleanText.length;
+
+                mostraToast('✅ Testo sincronizzato con FreeShow!', 'success');
             } else {
-                // Menu base per tutti (Regia o Admin non sbloccato)
-                modalTitle.textContent = '⚙️ Impostazioni';
-                
-                menuContent.innerHTML = `
-                    <a href="/change-password" 
-                       class="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center font-medium transition-colors">
-                        🔑 Cambia la mia Password
-                    </a>
-                    
-                    <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            💡 Funzioni base disponibili
-                        </p>
-                    </div>
-                `;
+                mostraToast('⚠️ Nessun testo trovato in FreeShow', 'warning');
             }
+
+        } catch (error) {
+            console.error('Errore Sync:', error);
+            mostraToast('❌ Errore connessione a FreeShow', 'error');
         }
+    }
+    // --- FINE ---
 
-        // Admin modal
-        adminMenuBtn.addEventListener('click', () => {
-            fetch('/api/check-admin')
-                .then(res => res.json())
-                .then(data => {
-                    populateMenu(data.isAdmin);
-                    adminModal.classList.remove('hidden');
-                })
-                .catch(() => {
-                    mostraToast('❌ Errore caricamento menu', 'error');
-                });
-        });
-
-        closeAdminModal.addEventListener('click', () => {
-            adminModal.classList.add('hidden');
-        });
-
-        adminModal.addEventListener('click', (e) => {
-            if (e.target === adminModal) {
-                adminModal.classList.add('hidden');
-            }
-        });
-
-        // Logout con conferma
-        logoutBtn.addEventListener('click', () => {
-            logoutModal.classList.remove('hidden');
-        });
-
-        cancelLogout.addEventListener('click', () => {
-            logoutModal.classList.add('hidden');
-        });
-
-        confirmLogout.addEventListener('click', async () => {
-            try {
-                const response = await fetch('/api/logout', { method: 'POST' });
-                if (response.ok) {
-                    window.location.href = '/login';
-                }
-            } catch (error) {
-                console.error('Errore logout:', error);
-                mostraToast('❌ Errore durante il logout', 'error');
-            }
-        });
-
-        logoutModal.addEventListener('click', (e) => {
-            if (e.target === logoutModal) {
-                logoutModal.classList.add('hidden');
-            }
-        });
-
-        // Theme Management
-        function getSystemTheme() {
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    // Logout logic
+    logoutBtn.addEventListener('click', () => { logoutModal.classList.remove('hidden'); });
+    cancelLogout.addEventListener('click', () => { logoutModal.classList.add('hidden'); });
+    confirmLogout.addEventListener('click', async () => {
+        try {
+            const response = await fetch('/api/logout', { method: 'POST' });
+            if (response.ok) window.location.href = '/login';
+        } catch (error) {
+            mostraToast('❌ Errore durante il logout', 'error');
         }
+    });
+    logoutModal.addEventListener('click', (e) => { if (e.target === logoutModal) logoutModal.classList.add('hidden'); });
 
-        function setTheme(theme) {
-            localStorage.setItem('theme', theme);
-            
-            if (theme === 'system') {
-                const systemTheme = getSystemTheme();
-                html.classList.toggle('dark', systemTheme === 'dark');
-            } else {
-                html.classList.toggle('dark', theme === 'dark');
-            }
+    // Theme logic
+    function getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    function setTheme(theme) {
+        localStorage.setItem('theme', theme);
+        if (theme === 'system') {
+            const systemTheme = getSystemTheme();
+            html.classList.toggle('dark', systemTheme === 'dark');
+        } else {
+            html.classList.toggle('dark', theme === 'dark');
         }
+    }
+    const savedTheme = localStorage.getItem('theme') || 'system';
+    themeSelect.value = savedTheme;
+    setTheme(savedTheme);
+    themeSelect.addEventListener('change', (e) => { setTheme(e.target.value); });
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (localStorage.getItem('theme') === 'system') setTheme('system');
+    });
 
-        const savedTheme = localStorage.getItem('theme') || 'system';
-        themeSelect.value = savedTheme;
-        setTheme(savedTheme);
+    // Character counter
+    testoInput.addEventListener('input', () => { charCount.textContent = testoInput.value.length; });
 
-        themeSelect.addEventListener('change', (e) => {
-            setTheme(e.target.value);
+    // Toast logic
+    function mostraToast(messaggio, tipo = 'success') {
+        const colors = {
+            success: 'bg-green-600 text-white',
+            error: 'bg-red-600 text-white',
+            warning: 'bg-yellow-500 text-gray-900',
+            info: 'bg-purple-600 text-white'
+        };
+        toastMessage.textContent = messaggio;
+        toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 z-50 text-sm ${colors[tipo]}`;
+        requestAnimationFrame(() => {
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
         });
+        setTimeout(() => {
+            toast.classList.add('translate-y-24', 'opacity-0');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+        }, 3000);
+    }
 
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-            if (localStorage.getItem('theme') === 'system') {
-                setTheme('system');
-            }
-        });
-
-        // Character counter
-        testoInput.addEventListener('input', () => {
-            charCount.textContent = testoInput.value.length;
-        });
-
-        // Toast function
-        function mostraToast(messaggio, tipo = 'success') {
-            const colors = {
-                success: 'bg-green-600 text-white',
-                error: 'bg-red-600 text-white',
-                warning: 'bg-yellow-500 text-gray-900',
-                info: 'bg-purple-600 text-white'
-            };
-            
-            toastMessage.textContent = messaggio;
-            toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg
-                              flex items-center gap-2 z-50 text-sm ${colors[tipo]}`;
-            
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-24', 'opacity-0');
-                toast.classList.add('translate-y-0', 'opacity-100');
-            });
-            
-            setTimeout(() => {
-                toast.classList.add('translate-y-24', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 3000);
+    // Socket functions
+    function inviaTesto() {
+        const testo = testoInput.value.trim();
+        if (testo === '') {
+            mostraToast('⚠️ Inserisci del testo prima di inviare!', 'error');
+            return;
         }
+        socket.emit('invia-testo', testo);
+        mostraToast('✓ Testo inviato al palco!', 'success');
+    }
 
-        // Send text
-        function inviaTesto() {
-            const testo = testoInput.value.trim();
-            
-            if (testo === '') {
-                mostraToast('⚠️ Inserisci del testo prima di inviare!', 'error');
-                return;
-            }
-            
-            socket.emit('invia-testo', testo);
-            mostraToast('✓ Testo inviato al palco!', 'success');
-        }
+    function svuotaDisplay() {
+        socket.emit('svuota-display');
+        mostraToast('🗑️ Display svuotato', 'warning');
+    }
 
-        // Clear display
-        function svuotaDisplay() {
-            socket.emit('svuota-display');
-            mostraToast('🗑️ Display svuotato', 'warning');
-        }
+    // Event Listeners
+    inviaBtn.addEventListener('click', inviaTesto);
+    svuotaBtn.addEventListener('click', svuotaDisplay);
+    syncBtn.addEventListener('click', syncFreeShow);
 
-        // Event listeners
-        inviaBtn.addEventListener('click', inviaTesto);
-        svuotaBtn.addEventListener('click', svuotaDisplay);
+    testoInput.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'Enter') inviaTesto();
+    });
 
-        // Keyboard shortcut
-        testoInput.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'Enter') {
-                inviaTesto();
-            }
-        });
+    socket.on('connect', () => {
+        console.log('✓ Connesso al server');
+        statusDot.className = 'w-2 h-2 rounded-full bg-green-500';
+        statusText.textContent = 'Connesso';
+        statusText.className = 'text-green-600 dark:text-green-400 text-xs';
+    });
 
-        // Connection status
-        socket.on('connect', () => {
-            console.log('✓ Connesso al server');
-            statusDot.className = 'w-2 h-2 rounded-full bg-green-500';
-            statusText.textContent = 'Connesso';
-            statusText.className = 'text-green-600 dark:text-green-400 text-xs';
-        });
-        
-        socket.on('disconnect', () => {
-            console.log('✗ Disconnesso dal server');
-            statusDot.className = 'w-2 h-2 rounded-full bg-red-500 animate-pulse';
-            statusText.textContent = 'Disconnesso';
-            statusText.className = 'text-red-600 dark:text-red-400 text-xs';
-            mostraToast('⚠️ Connessione persa!', 'error');
-        });
-    </script>
+    socket.on('disconnect', () => {
+        console.log('✗ Disconnesso dal server');
+        statusDot.className = 'w-2 h-2 rounded-full bg-red-500 animate-pulse';
+        statusText.textContent = 'Disconnesso';
+        statusText.className = 'text-red-600 dark:text-red-400 text-xs';
+        mostraToast('⚠️ Connessione persa!', 'error');
+    });
+</script>
 </body>
 </html>
